@@ -1,0 +1,9 @@
+<div class="stream-container" *ngIf="streamUrl; else loading">
+    <video controls autoplay playsinline class="video-player"></video>
+</div>
+
+<ng-template #loading>
+    <div class="loading-container">
+        <p>Loading live stream...</p>
+    </div>
+</ng-template>

@@ -1,0 +1,31 @@
+.page-container {
+    max-width: 1200px;
+    margin: 24px auto;
+    padding: 16px;
+}
+
+.search-bar {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.category-card {
+    height: 50px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+}
+
+.category-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+mat-card-title {
+    font-size: 15px;
+    font-weight: 500;
+}

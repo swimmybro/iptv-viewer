@@ -1,1 +1,69 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+@include mat.all-component-themes(mat.define-dark-theme((color: (primary: mat.define-palette(mat.$indigo-palette),
+                accent: mat.define-palette(mat.$blue-palette),
+            ))));
+
+* You can add global styles to this file,
+and also import other style files */ html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+
+}
+
+.page-container {
+    max-width: 1200px;
+    margin: 24px auto;
+    padding: 16px;
+    background-color: var(--bg-color);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+.search-bar {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.mat-mdc-form-field {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+}
+
+input[matInput] {
+    color: var(--text);
+}
+
+.category-card {
+    background-color: var(--card-bg);
+    color: var(--text);
+    height: 70px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.category-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+mat-card-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--accent);
+}
+
+mat-icon {
+    color: var(--accent);
+}
