@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-tv',
@@ -20,40 +20,64 @@ import { Router, RouterModule } from '@angular/router';
     MatListModule,
     MatIconModule,
     MatGridListModule,
-    RouterModule
+    RouterModule,
   ],
   templateUrl: './tv.html',
   styleUrl: './tv.css',
 })
 export class Tv {
-
   router = inject(Router);
   public filteredData: any;
   searchTerm = '';
   cols = 4;
+  path = '';
 
-  constructor(private dataService: DataService) { }
+  constructor(
+    private dataService: DataService,
+    private route: ActivatedRoute,
+  ) {
+    this.path = this.router.url.split('/')[1];
+    console.log(this.path);
+  }
 
   ngOnInit() {
-    this.dataService.getTVCategories().subscribe({
-      next: (data) => {
-        this.filteredData = data.filter(item => {
-          const name = item.category_name.toUpperCase();
-          return name.startsWith('CA') || name.startsWith('US');
-        })
-      }
+    if (this.path === 'tv') {
+      this.dataService.getTVCategories().subscribe({
+        next: (data) => {
+          this.filteredData = data.filter((item) => {
+            const name = item.category_name.toUpperCase();
+            return name.startsWith('CA') || name.startsWith('US') || name.startsWith('WT');
+          });
+        },
+      });
+    } else {
+      this.dataService.getMovieCategories().subscribe({
+        next: (data) => {
+          this.filteredData = data.filter((item) => {
+            const name = item.category_name.toUpperCase();
+            return name;
+          });
+        },
+      });
+    }
+
+    this.route.params.subscribe((params: Params) => {
+      console.log(params);
     });
   }
 
   filterCategories() {
     const term = this.searchTerm.toLowerCase();
-    this.filteredData = this.filteredData.filter((cat: { category_name: string; }) =>
-      cat.category_name.toLowerCase().includes(term)
+    this.filteredData = this.filteredData.filter((cat: { category_name: string }) =>
+      cat.category_name.toLowerCase().includes(term),
     );
   }
 
   onCategoryClick(category: any) {
-    this.router.navigate(['/tv', category.category_id]);
+    if (this.path === 'tv') {
+      this.router.navigate(['/tv', category.category_id]);
+    } else {
+      this.router.navigate(['/movie', category.category_id]);
+    }
   }
-
 }

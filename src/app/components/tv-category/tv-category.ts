@@ -19,41 +19,53 @@ import { ActivatedRoute, Router } from '@angular/router';
     MatInputModule,
     MatListModule,
     MatIconModule,
-    MatGridListModule
+    MatGridListModule,
   ],
   templateUrl: './tv-category.html',
   styleUrl: './tv-category.css',
 })
 export class TvCategory {
-
   router = inject(Router);
   public filteredData: any;
   searchTerm = '';
   cols = 4;
+  path = '';
 
   private route = inject(ActivatedRoute);
   categoryId = this.route.snapshot.paramMap.get('id');
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService) {
+    this.path = this.router.url.split('/')[1];
+  }
 
   ngOnInit() {
-    this.dataService.getTvCategoryData(this.categoryId).subscribe({
-      next: (data) => {
-        this.filteredData = data;
-        console.log(data);
-      }
-    });
+    if (this.path === 'tv') {
+      this.dataService.getTvCategoryData(this.categoryId).subscribe({
+        next: (data) => {
+          this.filteredData = data;
+        },
+      });
+    } else {
+      this.dataService.getMovieCategoryData(this.categoryId).subscribe({
+        next: (data) => {
+          this.filteredData = data;
+        },
+      });
+    }
   }
 
   filterCategories() {
     const term = this.searchTerm.toLowerCase();
-    this.filteredData = this.filteredData.filter((cat: { category_name: string; }) =>
-      cat.category_name.toLowerCase().includes(term)
+    this.filteredData = this.filteredData.filter((cat: { category_name: string }) =>
+      cat.category_name.toLowerCase().includes(term),
     );
   }
 
   onCategoryClick(category: any) {
-    this.router.navigate([`/tv/${this.categoryId}/stream/${category.stream_id}`]);
+    if (this.path === 'tv') {
+      this.router.navigate([`/tv/${this.categoryId}/stream/${category.stream_id}`]);
+    } else {
+      this.router.navigate([`/movie/${this.categoryId}/stream/${category.stream_id}`]);
+    }
   }
-
 }
