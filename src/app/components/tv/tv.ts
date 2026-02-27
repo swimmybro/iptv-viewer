@@ -28,8 +28,9 @@ import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
 export class Tv {
   router = inject(Router);
   public filteredData: any;
+  public allData: any;
   searchTerm = '';
-  cols = 4;
+  cols = 8;
   path = '';
 
   constructor(
@@ -37,7 +38,6 @@ export class Tv {
     private route: ActivatedRoute,
   ) {
     this.path = this.router.url.split('/')[1];
-    console.log(this.path);
   }
 
   ngOnInit() {
@@ -46,17 +46,21 @@ export class Tv {
         next: (data) => {
           this.filteredData = data.filter((item) => {
             const name = item.category_name.toUpperCase();
+            item.category_name = name.replace(/[\p{No}\p{Lm}ᴴᴰ\s\/]+$/gu, '').trim();
             return name.startsWith('CA') || name.startsWith('US') || name.startsWith('WT');
           });
+          this.allData = this.filteredData;
         },
       });
     } else {
       this.dataService.getMovieCategories().subscribe({
         next: (data) => {
           this.filteredData = data.filter((item) => {
-            const name = item.category_name.toUpperCase();
+            let name = item.category_name.toUpperCase();
+            item.category_name = name.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹ᴷᴾᴰᴼᴸᴮʸᴬᵁᴵᴴᴰ\s\/]+$/g, '').trim();
             return name;
           });
+          this.allData = this.filteredData;
         },
       });
     }
@@ -68,7 +72,7 @@ export class Tv {
 
   filterCategories() {
     const term = this.searchTerm.toLowerCase();
-    this.filteredData = this.filteredData.filter((cat: { category_name: string }) =>
+    this.filteredData = this.allData.filter((cat: { category_name: string }) =>
       cat.category_name.toLowerCase().includes(term),
     );
   }
@@ -77,7 +81,7 @@ export class Tv {
     if (this.path === 'tv') {
       this.router.navigate(['/tv', category.category_id]);
     } else {
-      this.router.navigate(['/movie', category.category_id]);
+      this.router.navigate(['/movies', category.category_id]);
     }
   }
 }

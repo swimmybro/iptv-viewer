@@ -1,0 +1,23 @@
+<nz-header
+  style="
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    background: #001529;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    height: 65px;
+  "
+>
+  <div class="logo" style="color: white; font-weight: bold; font-size: 20px">
+    <img style="width: 40px; height: 40px; margin-right: 10px" src="assets/popcorn.png" />
+  </div>
+  <ul nz-menu nzTheme="dark" nzMode="horizontal" class="header-menu">
+    <li nz-menu-item><a routerLink="/tv">TV</a></li>
+    <li nz-menu-item><a routerLink="/movies">Movies</a></li>
+    <!-- <li nz-menu-item><a routerLink="/watched">Watched</a></li> -->
+  </ul>
+</nz-header>

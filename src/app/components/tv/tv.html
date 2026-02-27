@@ -1,16 +1,21 @@
 <mat-card class="category-container">
-    <mat-form-field appearance="outline" class="search-bar">
-        <mat-icon matPrefix>search</mat-icon>
-        <input matInput placeholder="Search categories..." [(ngModel)]="searchTerm" (input)="filterCategories()" />
-    </mat-form-field>
+  <mat-form-field appearance="outline" class="search-bar">
+    <mat-icon matPrefix>search</mat-icon>
+    <input
+      matInput
+      placeholder="Search categories..."
+      [(ngModel)]="searchTerm"
+      (input)="filterCategories()"
+    />
+  </mat-form-field>
 
-    <mat-grid-list [cols]="cols" rowHeight="8:1" gutterSize="8px">
-        <mat-grid-tile *ngFor="let category of filteredData" (click)="onCategoryClick(category)">
-            <mat-card class="category-card">
-                <mat-card-header>
-                    <mat-card-title>{{ category.category_name }}</mat-card-title>
-                </mat-card-header>
-            </mat-card>
-        </mat-grid-tile>
-    </mat-grid-list>
+  <mat-grid-list [cols]="cols" rowHeight="2:1" gutterSize="8px">
+    <mat-grid-tile *ngFor="let category of filteredData" (click)="onCategoryClick(category)">
+      <mat-card class="category-card">
+        <mat-card-header>
+          <mat-card-title>{{ category.category_name }}</mat-card-title>
+        </mat-card-header>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
 </mat-card>

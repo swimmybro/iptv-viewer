@@ -1,16 +1,19 @@
+<!-- <div class="page-container"> -->
 <mat-card class="category-container">
-    <mat-form-field appearance="outline" class="search-bar">
-        <mat-icon matPrefix>search</mat-icon>
-        <input matInput placeholder="Search categories..." [(ngModel)]="searchTerm" (input)="filterCategories()" />
-    </mat-form-field>
+  <mat-form-field appearance="outline" class="search-bar">
+    <mat-icon matPrefix>search</mat-icon>
+    <input matInput placeholder="Search..." [(ngModel)]="searchTerm" (input)="filterCategories()" />
+  </mat-form-field>
 
-    <mat-grid-list [cols]="cols" rowHeight="4:1" gutterSize="8px">
-        <mat-grid-tile *ngFor="let category of filteredData" (click)="onCategoryClick(category)">
-            <mat-card class="category-card">
-                <mat-card-header>
-                    <mat-card-title>{{ category.name }}</mat-card-title>
-                </mat-card-header>
-            </mat-card>
-        </mat-grid-tile>
-    </mat-grid-list>
+  <mat-grid-list [cols]="cols" rowHeight="350px" gutterSize="0px">
+    <mat-grid-tile *ngFor="let category of filteredData" (click)="onCategoryClick(category)">
+      <mat-card class="category-card clean-card mat-elevation-z0">
+        <img mat-card-image *ngIf="path !== 'tv'" [src]="category.stream_icon" />
+        <mat-card-content>
+          <mat-card-title>{{ category.name.split(' - ').pop() }}</mat-card-title>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
 </mat-card>
+<!-- </div> -->

@@ -1,0 +1,20 @@
+{
+  "/api": {
+    "target": "http://cf.business-cdn-8k.ru",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/api": ""
+    }
+  },
+  "/stream": {
+    "target": "http://cf.business-cdn-8k.ru:80",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/stream": ""
+    }
+  }
+}

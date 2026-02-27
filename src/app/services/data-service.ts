@@ -14,19 +14,19 @@ export class DataService {
   // private tvStreamUrl = 'http://chips49880.cdngold.me//player_api.php?username=3517bro&password=14c3050f37&action=get_short_epg&stream_id=';
 
   private tvUrl =
-    'http://cf.business-cdn-8k.ru///player_api.php?username=3517&password=864c1b1220&action=get_live_categories';
+    '/api///player_api.php?username=3517&password=864c1b1220&action=get_live_categories';
 
   private tvCatUrl =
-    'http://cf.business-cdn-8k.ru///player_api.php?username=3517&password=864c1b1220&action=get_live_streams&category_id=';
+    '/api///player_api.php?username=3517&password=864c1b1220&action=get_live_streams&category_id=';
 
   private tvStreamUrl =
-    'http://cf.business-cdn-8k.ru///player_api.php?username=3517&password=864c1b1220&action=get_short_epg&stream_id=';
+    '/api///player_api.php?username=3517&password=864c1b1220&action=get_short_epg&stream_id=';
 
   private movieUrl =
-    'http://cf.business-cdn-8k.ru///player_api.php?username=3517&password=864c1b1220&action=get_vod_categories';
+    '/api///player_api.php?username=3517&password=864c1b1220&action=get_vod_categories';
 
   private movieCatUrl =
-    'http://cf.business-cdn-8k.ru///player_api.php?username=3517&password=864c1b1220&action=get_vod_streams&category_id=';
+    '/api///player_api.php?username=3517&password=864c1b1220&action=get_vod_streams&category_id=';
 
   constructor(private http: HttpClient) {}
 

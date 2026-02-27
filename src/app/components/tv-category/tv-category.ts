@@ -20,6 +20,7 @@ import { ActivatedRoute, Router } from '@angular/router';
     MatListModule,
     MatIconModule,
     MatGridListModule,
+    CommonModule,
   ],
   templateUrl: './tv-category.html',
   styleUrl: './tv-category.css',
@@ -27,8 +28,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class TvCategory {
   router = inject(Router);
   public filteredData: any;
+  public allData: any;
   searchTerm = '';
-  cols = 4;
+  cols = 8;
   path = '';
 
   private route = inject(ActivatedRoute);
@@ -43,12 +45,15 @@ export class TvCategory {
       this.dataService.getTvCategoryData(this.categoryId).subscribe({
         next: (data) => {
           this.filteredData = data;
+          this.allData = this.filteredData;
+          console.log(data);
         },
       });
     } else {
       this.dataService.getMovieCategoryData(this.categoryId).subscribe({
         next: (data) => {
           this.filteredData = data;
+          this.allData = this.filteredData;
         },
       });
     }
@@ -56,8 +61,8 @@ export class TvCategory {
 
   filterCategories() {
     const term = this.searchTerm.toLowerCase();
-    this.filteredData = this.filteredData.filter((cat: { category_name: string }) =>
-      cat.category_name.toLowerCase().includes(term),
+    this.filteredData = this.allData.filter((cat: { name: string }) =>
+      cat.name.toLowerCase().includes(term),
     );
   }
 
@@ -65,7 +70,7 @@ export class TvCategory {
     if (this.path === 'tv') {
       this.router.navigate([`/tv/${this.categoryId}/stream/${category.stream_id}`]);
     } else {
-      this.router.navigate([`/movie/${this.categoryId}/stream/${category.stream_id}`]);
+      this.router.navigate([`/movies/${this.categoryId}/stream/${category.stream_id}`]);
     }
   }
 }

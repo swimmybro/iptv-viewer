@@ -8,7 +8,7 @@ export const routes: Routes = [
   { path: 'tv', component: Tv },
   { path: 'tv/:id', component: TvCategory },
   { path: 'tv/:id/stream/:streamid', component: TvStream },
-  { path: 'movie', component: Tv },
-  { path: 'movie/:id', component: TvCategory },
-  { path: 'movie/:id/stream/:streamid', component: TvStream },
+  { path: 'movies', component: Tv },
+  { path: 'movies/:id', component: TvCategory },
+  { path: 'movies/:id/stream/:streamid', component: TvStream },
 ];

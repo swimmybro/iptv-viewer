@@ -27,10 +27,10 @@ export class TvStream implements OnInit, AfterViewInit {
 
     // const apiUrl = `http://chips49880.cdngold.me/player_api.php?username=3517bro&password=14c3050f37&action=get_short_epg&stream_id=${id}.m3u8`;
     if (this.path === 'tv') {
-      this.streamUrl = `http://cf.business-cdn-8k.ru:80/live/3517/864c1b1220/${id}.m3u8`;
+      this.streamUrl = `/stream/live/3517/864c1b1220/${id}.m3u8`;
       const apiUrl = `http://cf.business-cdn-8k.ru:80/live/3517/864c1b1220/${id}.ts`;
     } else {
-      this.streamUrl = `http://cf.business-cdn-8k.ru:80/movie/3517/864c1b1220/${id}.mkv`;
+      this.streamUrl = `/stream/movie/3517/864c1b1220/${id}.mkv`;
       const apiUrl = `http://cf.business-cdn-8k.ru:80/movie/3517/864c1b1220/${id}.ts`;
     }
 
