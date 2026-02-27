@@ -8,7 +8,12 @@
   <mat-grid-list [cols]="cols" rowHeight="350px" gutterSize="0px">
     <mat-grid-tile *ngFor="let category of filteredData" (click)="onCategoryClick(category)">
       <mat-card class="category-card clean-card mat-elevation-z0">
-        <img mat-card-image *ngIf="path !== 'tv'" [src]="category.stream_icon" />
+        <img
+          mat-card-image
+          *ngIf="path !== 'tv' && path !== 'shows'"
+          [src]="category.stream_icon"
+        />
+        <img mat-card-image *ngIf="path === 'shows'" [src]="category.cover" />
         <mat-card-content>
           <mat-card-title>{{ category.name.split(' - ').pop() }}</mat-card-title>
         </mat-card-content>

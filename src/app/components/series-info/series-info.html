@@ -1,0 +1,19 @@
+<!-- <div class="page-container"> -->
+<mat-card class="category-container">
+  <mat-form-field appearance="outline" class="search-bar">
+    <mat-icon matPrefix>search</mat-icon>
+    <input matInput placeholder="Search..." [(ngModel)]="searchTerm" (input)="filterCategories()" />
+  </mat-form-field>
+
+  <mat-grid-list [cols]="cols" rowHeight="350px" gutterSize="0px">
+    <mat-grid-tile *ngFor="let category of filteredData" (click)="onCategoryClick(category)">
+      <mat-card class="category-card clean-card mat-elevation-z0">
+        <img mat-card-image [src]="category.info.movie_image" />
+        <mat-card-content>
+          <mat-card-title>{{ category.title }}</mat-card-title>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
+</mat-card>
+<!-- </div> -->

@@ -46,14 +46,21 @@ export class TvCategory {
         next: (data) => {
           this.filteredData = data;
           this.allData = this.filteredData;
-          console.log(data);
         },
       });
-    } else {
+    } else if (this.path === 'movies') {
       this.dataService.getMovieCategoryData(this.categoryId).subscribe({
         next: (data) => {
           this.filteredData = data;
           this.allData = this.filteredData;
+        },
+      });
+    } else {
+      this.dataService.getSeriesCategoryData(this.categoryId).subscribe({
+        next: (data) => {
+          this.filteredData = data;
+          this.allData = this.filteredData;
+          console.log(data);
         },
       });
     }
@@ -69,8 +76,10 @@ export class TvCategory {
   onCategoryClick(category: any) {
     if (this.path === 'tv') {
       this.router.navigate([`/tv/${this.categoryId}/stream/${category.stream_id}`]);
-    } else {
+    } else if (this.path === 'movies') {
       this.router.navigate([`/movies/${this.categoryId}/stream/${category.stream_id}`]);
+    } else {
+      this.router.navigate([`/shows/${this.categoryId}/info/${category.series_id}`]);
     }
   }
 }

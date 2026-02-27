@@ -29,9 +29,11 @@ export class TvStream implements OnInit, AfterViewInit {
     if (this.path === 'tv') {
       this.streamUrl = `/stream/live/3517/864c1b1220/${id}.m3u8`;
       const apiUrl = `http://cf.business-cdn-8k.ru:80/live/3517/864c1b1220/${id}.ts`;
-    } else {
+    } else if (this.path === 'movies') {
       this.streamUrl = `/stream/movie/3517/864c1b1220/${id}.mkv`;
       const apiUrl = `http://cf.business-cdn-8k.ru:80/movie/3517/864c1b1220/${id}.ts`;
+    } else {
+      this.streamUrl = `/stream/series/3517/864c1b1220/${id}.mkv`;
     }
 
     // this.http.get(apiUrl).subscribe(url => {
