@@ -1,0 +1,91 @@
+@let s = state();
+@if (s.error) {
+  <div class="page">
+    <div class="error-box"><app-icon name="info" /><span>{{ s.error }}</span></div>
+  </div>
+} @else if (!s.data) {
+  <div class="detail">
+    <div class="hero skeleton-hero">
+      <div class="hero-inner">
+        <div class="poster skeleton"></div>
+        <div class="info">
+          <span class="skeleton line w60"></span>
+          <span class="skeleton line w30"></span>
+          <span class="skeleton line w90"></span>
+          <span class="skeleton line w80"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+} @else {
+  @let m = s.data;
+  <article class="detail">
+    <div class="hero">
+      @if (m.backdrop) {
+        <div class="backdrop" [style.background-image]="'url(' + m.backdrop + ')'"></div>
+      }
+      <div class="hero-inner">
+        <div class="poster">
+          <app-artwork [src]="m.poster" [alt]="m.title" />
+        </div>
+        <div class="info">
+          <a class="crumb" [routerLink]="['/movies', m.categoryId]">
+            <app-icon name="back" [size]="16" /> Movies
+          </a>
+          <h1>{{ m.title }}</h1>
+          @if (meta().length) {
+            <p class="meta">
+              @for (part of meta(); track $index) {
+                <span>{{ part }}</span>
+              }
+            </p>
+          }
+          @if (m.plot) {
+            <p class="plot">{{ m.plot }}</p>
+          }
+
+          <div class="actions">
+            <a class="btn primary big" [routerLink]="['/watch/movie', m.id]" [queryParams]="{ ext: m.ext }">
+              <app-icon name="play" [size]="18" [filled]="true" />
+              {{ resumable() ? resumeLabel() : 'Play' }}
+            </a>
+            @if (resumable()) {
+              <a class="btn big" [routerLink]="['/watch/movie', m.id]" [queryParams]="{ ext: m.ext, restart: 1 }">
+                Start over
+              </a>
+            }
+            <button type="button" class="btn big" (click)="toggleFav()" [attr.aria-pressed]="isFav()">
+              <app-icon name="heart" [filled]="isFav()" [size]="18" [class.fav-on]="isFav()" />
+              {{ isFav() ? 'In favorites' : 'Add to favorites' }}
+            </button>
+            @if (trailerUrl(); as t) {
+              <a class="btn ghost big" [href]="t" target="_blank" rel="noopener">
+                <app-icon name="external" [size]="16" /> Trailer
+              </a>
+            }
+          </div>
+
+          @if (progress(); as p) {
+            @if (resumable()) {
+              <div class="progress-line">
+                <span [style.width.%]="p.duration ? (p.position / p.duration) * 100 : 0"></span>
+              </div>
+            }
+          }
+
+          <dl class="facts">
+            @if (m.director) {
+              <div><dt>Director</dt><dd>{{ m.director }}</dd></div>
+            }
+            @if (m.cast) {
+              <div><dt>Cast</dt><dd>{{ m.cast }}</dd></div>
+            }
+            @if (m.releaseDate) {
+              <div><dt>Released</dt><dd>{{ m.releaseDate }}</dd></div>
+            }
+          </dl>
+        </div>
+      </div>
+    </div>
+  </article>
+}

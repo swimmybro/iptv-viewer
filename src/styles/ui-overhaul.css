@@ -1,0 +1,227 @@
+/* UI Overhaul - design system + utilities + component styles
+   Place this file under src/styles and import it from src/styles.css
+   or add a <link rel="stylesheet" href="styles/ui-overhaul.css"> in index.html
+*/
+:root {
+    /* Color palette */
+    --bg: #0f1724;
+    /* near-black blue */
+    --card: #0f1b2b;
+    --muted: #9aa7b2;
+    --text: #e6eef6;
+    --accent: #2dd4bf;
+    /* teal */
+    --accent-2: #60a5fa;
+    /* blue */
+    --danger: #ff6b6b;
+
+    /* Spacing */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --radius-sm: 6px;
+    --radius-md: 12px;
+
+    /* Typography */
+    --font-sans: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    --text-sm: 13px;
+    --text-md: 15px;
+    --text-lg: 18px;
+}
+
+/* Base reset and body */
+html,
+body,
+#app-root {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-sans);
+    background: linear-gradient(180deg, var(--bg) 0%, #071024 100%);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Layout helpers */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-md);
+}
+
+.row {
+    display: flex;
+    gap: var(--space-md);
+}
+
+.col {
+    flex: 1
+}
+
+/* Responsive grid for channel cards */
+.channel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--space-md);
+}
+
+/* Header */
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-sm) var(--space-md);
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(6px);
+}
+
+.app-header .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: var(--text-lg)
+}
+
+.app-header .brand .logo {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border-radius: 8px;
+    display: inline-block
+}
+
+.app-header .search {
+    flex: 1;
+    margin: 0 var(--space-md);
+    max-width: 560px
+}
+
+.app-header .search input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--text);
+}
+
+.app-header .actions {
+    display: flex;
+    gap: 8px;
+    align-items: center
+}
+
+.app-header .btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    padding: 8px 10px;
+    border-radius: 8px;
+    color: var(--text);
+    cursor: pointer
+}
+
+/* Channel Card */
+.channel-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.1));
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
+    transition: transform .16s ease, box-shadow .16s ease;
+    border: 1px solid rgba(255, 255, 255, 0.02)
+}
+
+.channel-card:focus-within,
+.channel-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(2, 6, 23, 0.7)
+}
+
+.channel-card .thumb {
+    background: #081424;
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 14px
+}
+
+.channel-card .meta {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px
+}
+
+.channel-card .title {
+    font-size: var(--text-md);
+    font-weight: 600;
+    color: var(--text);
+}
+
+.channel-card .subtitle {
+    font-size: var(--text-sm);
+    color: var(--muted)
+}
+
+.channel-card .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+
+.channel-card .play {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    color: #042027;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer
+}
+
+/* Player area */
+.player {
+    background: linear-gradient(180deg, #04131d 0%, #071824 100%);
+    border-radius: 12px;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.03)
+}
+
+/* Utility classes */
+.text-muted {
+    color: var(--muted)
+}
+
+.mt-sm {
+    margin-top: var(--space-sm)
+}
+
+/* Accessibility focus */
+:focus {
+    outline: 3px solid rgba(45, 212, 191, 0.14);
+    outline-offset: 2px
+}
+
+/* Responsive tweaks */
+@media (max-width:720px) {
+    .app-header {
+        padding: 10px
+    }
+
+    .app-header .search {
+        display: none
+    }
+
+    .channel-card .thumb {
+        height: 140px
+    }
+}

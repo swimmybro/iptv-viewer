@@ -1,0 +1,130 @@
+@let s = state();
+@if (s.error) {
+  <div class="page">
+    <div class="error-box"><app-icon name="info" /><span>{{ s.error }}</span></div>
+  </div>
+} @else if (!s.data) {
+  <div class="detail">
+    <div class="hero skeleton-hero">
+      <div class="hero-inner">
+        <div class="poster skeleton"></div>
+        <div class="info">
+          <span class="skeleton line w60"></span>
+          <span class="skeleton line w30"></span>
+          <span class="skeleton line w90"></span>
+          <span class="skeleton line w80"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+} @else {
+  @let show = s.data;
+  <article class="detail">
+    <div class="hero">
+      @if (show.backdrop || show.poster) {
+        <div class="backdrop" [style.background-image]="'url(' + (show.backdrop || show.poster) + ')'"></div>
+      }
+      <div class="hero-inner">
+        <div class="poster">
+          <app-artwork [src]="show.poster" [alt]="show.title" />
+        </div>
+        <div class="info">
+          <a class="crumb" [routerLink]="['/series', show.categoryId]">
+            <app-icon name="back" [size]="16" /> Series
+          </a>
+          <h1>{{ show.title }}</h1>
+          @if (meta().length) {
+            <p class="meta">
+              @for (part of meta(); track $index) {
+                <span>{{ part }}</span>
+              }
+            </p>
+          }
+          @if (show.plot) {
+            <p class="plot">{{ show.plot }}</p>
+          }
+
+          <div class="actions">
+            @if (upNext(); as n) {
+              <a class="btn primary big" [routerLink]="['/watch/series', n.episode.id]" [queryParams]="watchQuery(n.episode)">
+                <app-icon name="play" [size]="18" [filled]="true" />
+                {{ n.resume ? 'Resume' : 'Play' }} S{{ pad(n.episode.season) }} · E{{ pad(n.episode.number) }}
+              </a>
+            }
+            <button type="button" class="btn big" (click)="toggleFav()" [attr.aria-pressed]="isFav()">
+              <app-icon name="heart" [filled]="isFav()" [size]="18" [class.fav-on]="isFav()" />
+              {{ isFav() ? 'In favorites' : 'Add to favorites' }}
+            </button>
+            @if (trailerUrl(); as t) {
+              <a class="btn ghost big" [href]="t" target="_blank" rel="noopener">
+                <app-icon name="external" [size]="16" /> Trailer
+              </a>
+            }
+          </div>
+
+          <dl class="facts">
+            @if (show.cast) {
+              <div><dt>Cast</dt><dd>{{ show.cast }}</dd></div>
+            }
+            @if (show.director) {
+              <div><dt>Director</dt><dd>{{ show.director }}</dd></div>
+            }
+            @if (show.releaseDate) {
+              <div><dt>First aired</dt><dd>{{ show.releaseDate }}</dd></div>
+            }
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <section class="episodes">
+      @if (show.seasons.length > 1) {
+        <div class="season-tabs" role="tablist" aria-label="Seasons">
+          @for (se of show.seasons; track se.number) {
+            <button type="button" class="chip" role="tab" [attr.aria-selected]="currentSeason()?.number === se.number"
+              [class.active]="currentSeason()?.number === se.number" (click)="season.set(se.number)">
+              {{ se.name }}
+            </button>
+          }
+        </div>
+      }
+
+      @if (currentSeason(); as se) {
+        <h2 class="visually-hidden">{{ se.name }}</h2>
+        @if (se.overview) {
+          <p class="plot" style="margin-bottom: 18px">{{ se.overview }}</p>
+        }
+        <div class="episode-list">
+          @for (e of se.episodes; track e.id) {
+            <a class="episode" [class.watched]="isWatched(e)" [routerLink]="['/watch/series', e.id]" [queryParams]="watchQuery(e)">
+              <div class="still">
+                <app-artwork [src]="e.still || se.cover || show.backdrop" [alt]="e.title" />
+                <span class="num">E{{ pad(e.number) }}</span>
+                @if (isWatched(e)) {
+                  <span class="done"><app-icon name="check" [size]="14" [stroke]="2.5" /></span>
+                }
+                @if (progressPct(e); as pct) {
+                  <div class="bar"><span [style.width.%]="pct"></span></div>
+                }
+              </div>
+              <div class="ep-body">
+                <div class="ep-title">{{ e.title }}</div>
+                @if (epMeta(e)) {
+                  <div class="ep-meta">{{ epMeta(e) }}</div>
+                }
+                @if (e.plot) {
+                  <p class="ep-plot">{{ e.plot }}</p>
+                }
+              </div>
+              <span class="ep-play" aria-hidden="true"><app-icon name="play" [size]="18" [filled]="true" /></span>
+            </a>
+          } @empty {
+            <div class="empty"><h3>No episodes listed</h3><p>The provider hasn't published episodes for this season.</p></div>
+          }
+        </div>
+      } @else {
+        <div class="empty"><h3>No episodes yet</h3><p>The provider hasn't published any episodes for this show.</p></div>
+      }
+    </section>
+  </article>
+}

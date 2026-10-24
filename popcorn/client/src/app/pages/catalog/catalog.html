@@ -1,0 +1,77 @@
+<div class="page">
+  <header class="page-head">
+    <div>
+      <h1>{{ label() }}</h1>
+      @if (current(); as c) {
+        <p class="lead">{{ c.name }}</p>
+      }
+    </div>
+    <label class="field search">
+      <app-icon name="search" [size]="18" />
+      <input type="search" [placeholder]="'Filter ' + label().toLowerCase() + ' in this category'"
+        [value]="query()" (input)="query.set($any($event.target).value)" />
+    </label>
+  </header>
+
+  @let cats = categories();
+  @if (cats.error) {
+    <div class="error-box"><app-icon name="info" /><span>{{ cats.error }}</span></div>
+  } @else if (cats.data) {
+    <div class="chips" role="tablist" aria-label="Categories">
+      <a class="chip" [routerLink]="[base(), NEW]" [class.active]="category() === NEW">
+        <app-icon name="clock" [size]="15" /> Recently added
+      </a>
+      @for (c of cats.data; track c.id) {
+        <a class="chip" [routerLink]="[base(), c.id]" [class.active]="c.id === category()">{{ c.name }}</a>
+      }
+    </div>
+  } @else {
+    <div class="chips">
+      @for (s of [1, 2, 3, 4, 5, 6]; track s) {
+        <span class="skeleton chip-skel"></span>
+      }
+    </div>
+  }
+
+  @let res = items();
+  @if (res.loading) {
+    <div class="toolbar"><span class="skeleton tb-skel"></span></div>
+    <div class="grid" [class.compact]="library.settings().density === 'compact'">
+      @for (s of skeletons; track $index) {
+        <div class="skeleton poster-skel"></div>
+      }
+    </div>
+  } @else if (res.error) {
+    <div class="error-box"><app-icon name="info" /><span>{{ res.error }}</span></div>
+  } @else {
+    <div class="toolbar">
+      <span class="muted count">{{ sorted().length }} title{{ sorted().length === 1 ? '' : 's' }}</span>
+      @if (category() !== NEW) {
+        <div class="sorts" role="group" aria-label="Sort">
+          @for (s of sorts; track s.id) {
+            <button type="button" class="sort" [class.active]="sort() === s.id" (click)="sort.set(s.id)">{{ s.label }}</button>
+          }
+        </div>
+      }
+    </div>
+
+    @if (!visible().length) {
+      <div class="empty">
+        <h3>{{ query() ? 'Nothing matches' : 'Nothing in this category' }}</h3>
+        <p>{{ query() ? 'Try a different spelling, or search everything from the Search page.' : 'Pick another category above.' }}</p>
+      </div>
+    } @else {
+      <div class="grid" [class.compact]="library.settings().density === 'compact'">
+        @for (item of visible(); track item.id) {
+          <app-poster-card [kind]="item.kind" [id]="item.id" [title]="item.title" [image]="item.poster"
+            [subtitle]="subtitle(item)" [link]="detailLink(item)" />
+        }
+      </div>
+      @if (hasMore()) {
+        <div class="more" #sentinel>
+          <button type="button" class="btn" (click)="loadMore()">Show more</button>
+        </div>
+      }
+    }
+  }
+</div>

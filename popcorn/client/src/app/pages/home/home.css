@@ -1,0 +1,175 @@
+.quick {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.quick-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px 18px 16px;
+  min-height: 124px;
+  border-radius: var(--radius-l);
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  color: var(--text);
+  transition: background 0.15s var(--ease), border-color 0.15s var(--ease);
+}
+
+.quick-tile:hover {
+  background: var(--surface);
+  border-color: var(--line-strong);
+}
+
+.quick-tile app-icon {
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.quick-tile.live {
+  background: linear-gradient(135deg, #2a2114 0%, var(--bg-raised) 70%);
+}
+
+.q-title {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.q-sub {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Continue watching */
+.resume {
+  position: relative;
+  display: block;
+  border-radius: var(--radius-m);
+}
+
+.thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.thumb .play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.thumb .play app-icon {
+  width: 44px;
+  height: 44px;
+  padding: 12px 10px 12px 14px;
+  border-radius: 50%;
+  background: rgba(20, 18, 16, 0.8);
+}
+
+.resume:hover .play,
+.resume:focus-visible .play {
+  opacity: 1;
+}
+
+.bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.bar span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.resume-meta {
+  padding: 8px 2px 0;
+}
+
+.r-title {
+  font-weight: 600;
+  font-size: 13.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.r-sub {
+  color: var(--muted);
+  font-size: 12.5px;
+  margin-top: 2px;
+}
+
+.remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(20, 18, 16, 0.85);
+  color: var(--text-2);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.resume:hover .remove,
+.remove:focus-visible {
+  opacity: 1;
+}
+
+/* Channel rail */
+.rail.channels {
+  grid-auto-columns: 132px;
+}
+
+.chan {
+  display: block;
+  padding: 10px;
+  border-radius: var(--radius-m);
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  transition: background 0.15s var(--ease), border-color 0.15s var(--ease);
+}
+
+.chan:hover {
+  background: var(--surface);
+  border-color: var(--line-strong);
+}
+
+.chan-logo {
+  height: 64px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #0f0d0b;
+}
+
+.chan-name {
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 900px) {
+  .quick {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

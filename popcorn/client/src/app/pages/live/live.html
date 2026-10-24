@@ -1,0 +1,94 @@
+<div class="page live-page">
+  <header class="page-head">
+    <div>
+      <h1>Live TV</h1>
+      @if (current(); as c) {
+        <p class="lead">{{ c.name }}</p>
+      }
+    </div>
+    <label class="field search">
+      <app-icon name="search" [size]="18" />
+      <input type="search" placeholder="Filter channels in this category" [value]="query()"
+        (input)="query.set($any($event.target).value)" />
+    </label>
+  </header>
+
+  <div class="layout">
+    <aside class="cats" aria-label="Categories">
+      <label class="field small">
+        <app-icon name="search" [size]="16" />
+        <input type="search" placeholder="Find a category" [value]="catFilter()"
+          (input)="catFilter.set($any($event.target).value)" />
+      </label>
+      @let cats = categories();
+      @if (cats.loading) {
+        <ul class="cat-list">
+          @for (s of skeletons; track $index) {
+            <li class="skeleton cat-skel"></li>
+          }
+        </ul>
+      } @else if (cats.error) {
+        <div class="error-box">{{ cats.error }}</div>
+      } @else {
+        <ul class="cat-list">
+          @for (c of filteredCategories(); track c.id) {
+            <li>
+              <a [routerLink]="['/live', c.id]" [class.active]="c.id === category()">
+                @if (c.tag) {<span class="tag">{{ c.tag }}</span>}
+                <span class="cat-name">{{ c.tag ? c.title : c.name }}</span>
+              </a>
+            </li>
+          } @empty {
+            <li class="muted none">No categories match.</li>
+          }
+        </ul>
+      }
+    </aside>
+
+    <section class="channels-pane">
+      @let ch = channels();
+      @if (ch.loading) {
+        <div class="grid channels">
+          @for (s of skeletons; track $index) {
+            <div class="skeleton chan-skel"></div>
+          }
+        </div>
+      } @else if (ch.error) {
+        <div class="error-box">
+          <app-icon name="info" />
+          <span>{{ ch.error }}</span>
+        </div>
+      } @else if (!visible().length) {
+        <div class="empty">
+          <h3>{{ query() ? 'No channels match' : 'No channels in this category' }}</h3>
+          <p>{{ query() ? 'Try a shorter search, or clear it.' : 'Pick another category on the left.' }}</p>
+        </div>
+      } @else {
+        <div class="toolbar">
+          <p class="count muted">{{ visible().length }} channel{{ visible().length === 1 ? '' : 's' }}</p>
+          <div class="view-toggle" role="group" aria-label="Layout">
+            <button type="button" [class.active]="view() === 'grid'" (click)="setView('grid')" aria-label="Tiles" title="Tiles">
+              <app-icon name="grid" [size]="17" />
+            </button>
+            <button type="button" [class.active]="view() === 'list'" (click)="setView('list')" aria-label="List" title="List">
+              <app-icon name="list" [size]="17" />
+            </button>
+          </div>
+        </div>
+        @if (view() === 'list') {
+          <div class="channel-list">
+            @for (c of visible(); track c.id) {
+              <app-channel-card [channel]="c" [categoryId]="category() ?? null" layout="row" />
+            }
+          </div>
+        } @else {
+          <div class="grid channels">
+            @for (c of visible(); track c.id) {
+              <app-channel-card [channel]="c" [categoryId]="category() ?? null" />
+            }
+          </div>
+        }
+      }
+    </section>
+  </div>
+</div>

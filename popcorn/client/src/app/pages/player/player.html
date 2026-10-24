@@ -1,0 +1,266 @@
+<div class="stage" [class.chrome-hidden]="!controlsVisible()" (click)="onStageClick($event)" (dblclick)="onStageDblClick($event)">
+  <video #video playsinline preload="auto" [attr.poster]="null"
+    (loadedmetadata)="onLoadedMetadata()" (timeupdate)="onTimeUpdate()" (progress)="onTimeUpdate()"
+    (play)="onPlay()" (pause)="onPause()" (waiting)="onWaiting()" (playing)="onPlaying()" (canplay)="onPlaying()"
+    (volumechange)="onVolume()" (ended)="onEnded()" (error)="onError()" (ratechange)="rate.set(video.playbackRate)"
+    (enterpictureinpicture)="onPipChange(true)" (leavepictureinpicture)="onPipChange(false)"></video>
+
+  <!-- Spinner -->
+  @if ((loading() || waiting()) && !error()) {
+    <div class="spinner" aria-live="polite" aria-label="Loading"></div>
+  }
+
+  <!-- Big play button when paused / autoplay blocked -->
+  @if (!playing() && !loading() && !error() && countdown() === null) {
+    <button type="button" class="bigplay" (click)="togglePlay(); $event.stopPropagation()" aria-label="Play">
+      <app-icon name="play" [size]="34" [filled]="true" />
+    </button>
+  }
+
+  <!-- Error -->
+  @if (error(); as err) {
+    <div class="overlay-card">
+      <app-icon name="info" [size]="26" />
+      <h2>Can't play this</h2>
+      <p>{{ err }}</p>
+      <div class="row">
+        <button type="button" class="btn" (click)="back()">Go back</button>
+        @if (isLive()) {
+          <button type="button" class="btn primary" (click)="stepChannel(1)">Next channel</button>
+        } @else if (canConvert() && mode() !== 'transcode') {
+          <button type="button" class="btn primary" (click)="convert('transcode')">Try re-encoding</button>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Next episode countdown -->
+  @if (countdown() !== null && nextEpisode(); as next) {
+    <div class="overlay-card next-up">
+      <p class="muted">Up next in {{ countdown() }}</p>
+      <h2>S{{ pad(next.season) }} · E{{ pad(next.number) }} — {{ next.title }}</h2>
+      <div class="row">
+        <button type="button" class="btn" (click)="cancelCountdown()">Cancel</button>
+        <button type="button" class="btn primary" (click)="goEpisode(next)">
+          <app-icon name="play" [size]="16" [filled]="true" /> Play now
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Notice toast -->
+  @if (notice(); as n) {
+    <div class="toast" role="status">{{ n }}</div>
+  }
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <button type="button" class="ctl" (click)="back()" aria-label="Back">
+      <app-icon name="back" [size]="22" />
+    </button>
+    <div class="titles">
+      @if (meta(); as m) {
+        <div class="title">
+          @if (isLive()) {<span class="live-pill"><span class="live-dot"></span>Live</span>}
+          {{ m.title }}
+        </div>
+        @if (m.subtitle) {<div class="subtitle">{{ m.subtitle }}</div>}
+        @if (isLive() && epg()?.now; as now) {
+          <div class="subtitle">{{ now.title }} <span class="faint">· until {{ now.end | timeOfDay }}</span></div>
+        }
+      }
+    </div>
+    <div class="top-actions">
+      @if (isLive()) {
+        <button type="button" class="ctl" (click)="toggleMenu('channels'); $event.stopPropagation()" aria-label="Channel list" title="Channels (c)">
+          <app-icon name="list" [size]="22" />
+        </button>
+      }
+      <button type="button" class="ctl" (click)="toggleFav(); $event.stopPropagation()" [attr.aria-pressed]="isShowFav()"
+        [class.on]="isShowFav()" aria-label="Favorite" title="Favorite">
+        <app-icon name="heart" [size]="22" [filled]="isShowFav()" />
+      </button>
+      <button type="button" class="ctl" (click)="toggleMenu('settings'); $event.stopPropagation()" aria-label="Playback settings" title="Settings">
+        <app-icon name="settings" [size]="22" />
+      </button>
+    </div>
+  </header>
+
+  <!-- Settings menu -->
+  @if (menuOpen() === 'settings') {
+    <div class="menu" (click)="$event.stopPropagation()">
+      @if (isLive()) {
+        <div class="menu-group">
+          <div class="menu-label">Live stream</div>
+          <button type="button" [class.active]="liveFormat() === 'ts'" (click)="setLiveFormat('ts')">
+            MPEG-TS <span class="muted">— source quality, like TiviMate</span>
+          </button>
+          <button type="button" [class.active]="liveFormat() === 'hls'" (click)="setLiveFormat('hls')">
+            HLS <span class="muted">— provider's adaptive copy</span>
+          </button>
+          @if (liveSummary(); as info) {
+            <p class="menu-note">
+              Source: {{ info.source }}<br />
+              {{ liveFormat() === 'ts' ? (liveStage() === 'forced' ? 'Fully re-encoded on server' : liveStage() === 'raw' ? 'Played as-is' : info.converting) : 'Via HLS' }}
+            </p>
+          } @else if (liveFormat() === 'ts' && !caps()?.remux) {
+            <p class="menu-note">Install ffmpeg on the server to convert feeds the browser can't decode.</p>
+          }
+        </div>
+      }
+      @if (isLive() && liveFormat() === 'hls' && levels().length > 1) {
+        <div class="menu-group">
+          <div class="menu-label">Quality</div>
+          <button type="button" [class.active]="currentLevel() === -1" (click)="setLevel(-1)">Auto</button>
+          @for (l of levels(); track $index) {
+            <button type="button" [class.active]="currentLevel() === $index" (click)="setLevel($index)">{{ levelLabel(l) }}</button>
+          }
+        </div>
+      }
+      @if (!isLive()) {
+        <div class="menu-group">
+          <div class="menu-label">Speed</div>
+          <div class="menu-row">
+            @for (r of rates; track r) {
+              <button type="button" [class.active]="rate() === r" (click)="setRate(r)">{{ r }}×</button>
+            }
+          </div>
+        </div>
+        <div class="menu-group">
+          <div class="menu-label">Playback method</div>
+          @if (liveSummary(); as info) {
+            <p class="menu-note">Source: {{ info.source }}</p>
+          }
+          <button type="button" [class.active]="mode() === 'direct'" (click)="playDirect()">
+            Direct <span class="muted">— original file</span>
+          </button>
+          <button type="button" [class.active]="mode() === 'remux'" (click)="convert('remux')" [disabled]="!canConvert()">
+            Convert <span class="muted">— fixes audio or container</span>
+          </button>
+          <button type="button" [class.active]="mode() === 'transcode'" (click)="convert('transcode')" [disabled]="!canConvert()">
+            Re-encode <span class="muted">— slowest, plays anything</span>
+          </button>
+          @if (!canConvert()) {
+            <p class="menu-note">Install ffmpeg on the server to enable conversion.</p>
+          }
+        </div>
+      }
+      <div class="menu-group">
+        <div class="menu-label">Shortcuts</div>
+        <p class="menu-note">
+          Space play/pause · F fullscreen · M mute · P picture-in-picture
+          @if (isLive()) {<br />↑ ↓ change channel · C channel list}
+          @else {<br />← → 10 s · Shift+← → 1 min · N next episode}
+        </p>
+      </div>
+    </div>
+  }
+
+  <!-- Channel drawer (live) -->
+  @if (menuOpen() === 'channels') {
+    <aside class="drawer" (click)="$event.stopPropagation()" aria-label="Channels">
+      <label class="field small">
+        <app-icon name="search" [size]="16" />
+        <input type="search" placeholder="Find a channel" [value]="channelFilter()" (input)="channelFilter.set($any($event.target).value)" autofocus />
+      </label>
+      <ul>
+        @for (c of filteredChannels(); track c.id) {
+          <li>
+            <button type="button" [class.active]="c.id === id()" (click)="goChannel(c)">
+              <span class="d-logo"><app-artwork [src]="c.icon" [alt]="c.title" fit="contain" /></span>
+              <span class="d-name">{{ c.title }}</span>
+              @if (c.id === id()) {<app-icon name="signal" [size]="16" />}
+            </button>
+          </li>
+        } @empty {
+          <li class="muted d-empty">No channels match.</li>
+        }
+      </ul>
+    </aside>
+  }
+
+  <!-- Bottom controls -->
+  <div class="controls" (click)="$event.stopPropagation()">
+    @if (isLive()) {
+      @if (epg(); as e) {
+        @if (e.now) {
+          <div class="epg-line">
+            <span class="epg-now">{{ e.now.title }}</span>
+            <span class="epg-times">{{ e.now.start | timeOfDay }} – {{ e.now.end | timeOfDay }}</span>
+            @if (e.next) {<span class="epg-next">Next: {{ e.next.title }}</span>}
+          </div>
+          <div class="track static"><span class="fill" [style.width.%]="epgPct()"></span></div>
+        }
+      }
+    } @else {
+      <div class="scrub">
+        <span class="time">{{ position() | clock }}</span>
+        <div class="track" [class.disabled]="!seekable()">
+          <span class="buffer" [style.width.%]="bufferedPct()"></span>
+          <span class="fill" [style.width.%]="progressPct()"></span>
+          <input type="range" min="0" max="1000" step="1" [value]="progressPct() * 10" (input)="onScrub($event)"
+            [disabled]="!seekable()" aria-label="Seek" />
+        </div>
+        <span class="time">{{ duration() | clock }}</span>
+      </div>
+    }
+
+    <div class="bar">
+      <div class="left">
+        @if (isLive()) {
+          <button type="button" class="ctl" (click)="stepChannel(-1)" aria-label="Previous channel" title="Previous channel (↑)">
+            <app-icon name="prev" [size]="22" [filled]="true" />
+          </button>
+        } @else {
+          @if (kind() === 'series') {
+            <button type="button" class="ctl" (click)="goEpisode(prevEpisode())" [disabled]="!prevEpisode()" aria-label="Previous episode">
+              <app-icon name="prev" [size]="22" [filled]="true" />
+            </button>
+          }
+          <button type="button" class="ctl" (click)="seekBy(-10)" aria-label="Back 10 seconds" [disabled]="!seekable()">
+            <app-icon name="skipBack" [size]="24" />
+          </button>
+        }
+        <button type="button" class="ctl play" (click)="togglePlay()" [attr.aria-label]="playing() ? 'Pause' : 'Play'">
+          <app-icon [name]="playing() ? 'pause' : 'play'" [size]="26" [filled]="true" />
+        </button>
+        @if (isLive()) {
+          <button type="button" class="ctl" (click)="stepChannel(1)" aria-label="Next channel" title="Next channel (↓)">
+            <app-icon name="next" [size]="22" [filled]="true" />
+          </button>
+        } @else {
+          <button type="button" class="ctl" (click)="seekBy(10)" aria-label="Forward 10 seconds" [disabled]="!seekable()">
+            <app-icon name="skipForward" [size]="24" />
+          </button>
+          @if (kind() === 'series') {
+            <button type="button" class="ctl" (click)="goEpisode(nextEpisode())" [disabled]="!nextEpisode()" aria-label="Next episode" title="Next episode (n)">
+              <app-icon name="next" [size]="22" [filled]="true" />
+            </button>
+          }
+        }
+        <div class="vol">
+          <button type="button" class="ctl" (click)="toggleMute()" [attr.aria-label]="muted() ? 'Unmute' : 'Mute'">
+            <app-icon [name]="muted() || volume() === 0 ? 'mute' : 'volume'" [size]="22" />
+          </button>
+          <input type="range" min="0" max="1" step="0.02" [value]="muted() ? 0 : volume()" (input)="setVolume($event)" aria-label="Volume" />
+        </div>
+        @if (mode() !== 'direct') {
+          <span class="mode-pill" title="Served through ffmpeg">{{ mode() === 'remux' ? 'Converted' : 'Re-encoded' }}</span>
+        }
+      </div>
+      <div class="right">
+        @if (kind() === 'series' && nextEpisode(); as next) {
+          <button type="button" class="btn small next-ep" (click)="goEpisode(next)">
+            Next: E{{ pad(next.number) }}
+          </button>
+        }
+        <button type="button" class="ctl" (click)="togglePip()" aria-label="Picture in picture" title="Picture in picture (p)">
+          <app-icon name="pip" [size]="22" />
+        </button>
+        <button type="button" class="ctl" (click)="toggleFullscreen()" [attr.aria-label]="fullscreen() ? 'Exit fullscreen' : 'Fullscreen'" title="Fullscreen (f)">
+          <app-icon [name]="fullscreen() ? 'exitFullscreen' : 'fullscreen'" [size]="22" />
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

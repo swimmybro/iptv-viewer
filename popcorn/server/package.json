@@ -1,0 +1,18 @@
+{
+  "name": "popcorn-server",
+  "version": "1.0.0",
+  "description": "Popcorn IPTV viewer – API proxy, stream relay and static host",
+  "type": "module",
+  "main": "src/index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2"
+  }
+}

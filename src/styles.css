@@ -1,15 +1,9 @@
 @use '@angular/material' as mat;
 
-@include mat.all-component-themes(
-  mat.define-dark-theme(
-    (
-      color: (
-        primary: mat.define-palette(mat.$indigo-palette),
-        accent: mat.define-palette(mat.$blue-palette)
-      )
-    )
-  )
-);
+@import "./styles/ui-overhaul.css";
+
+@include mat.all-component-themes(mat.define-dark-theme((color: (primary: mat.define-palette(mat.$indigo-palette),
+        accent: mat.define-palette(mat.$blue-palette)))));
 
 * You can add global styles to this file,
 and also import other style files */ html,
@@ -75,16 +69,20 @@ html,
 body {
   height: 100%;
   margin: 0;
-  background-color: #07294e; /* Replace with your desired color */
+  background-color: #07294e;
+  /* Replace with your desired color */
   color: antiquewhite;
 }
 
 input {
   color: antiquewhite !important;
 }
+
 input::placeholder {
-  color: antiquewhite !important; /* Set to your desired color */
-  opacity: 0.8 !important; /* Firefox requires this to show the full color */
+  color: antiquewhite !important;
+  /* Set to your desired color */
+  opacity: 0.8 !important;
+  /* Firefox requires this to show the full color */
 }
 
 mat-card-title {

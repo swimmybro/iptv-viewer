@@ -1,0 +1,117 @@
+<div class="page">
+  <header class="page-head">
+    <div>
+      <h1>{{ greeting }}.</h1>
+      <p class="lead">Pick up where you left off, or jump into something new.</p>
+    </div>
+  </header>
+
+  <nav class="quick" aria-label="Browse">
+    <a routerLink="/live" class="quick-tile live">
+      <app-icon name="tv" [size]="26" />
+      <span class="q-title">Live TV</span>
+      <span class="q-sub">Channels and what's on now</span>
+    </a>
+    <a routerLink="/movies" class="quick-tile">
+      <app-icon name="film" [size]="26" />
+      <span class="q-title">Movies</span>
+      <span class="q-sub">Browse by category</span>
+    </a>
+    <a routerLink="/series" class="quick-tile">
+      <app-icon name="series" [size]="26" />
+      <span class="q-title">Series</span>
+      <span class="q-sub">Seasons and episodes</span>
+    </a>
+    <a routerLink="/search" class="quick-tile">
+      <app-icon name="search" [size]="26" />
+      <span class="q-title">Search</span>
+      <span class="q-sub">Everything, by title</span>
+    </a>
+  </nav>
+
+  @if (continueWatching().length) {
+    <section class="section">
+      <div class="section-head">
+        <h2>Continue watching</h2>
+      </div>
+      <div class="rail wide">
+        @for (item of continueWatching(); track item.ref.kind + item.ref.id) {
+          <a class="resume" [routerLink]="watchLink(item.ref)" [queryParams]="watchQuery(item.ref)">
+            <div class="thumb">
+              <app-artwork [src]="item.ref.image" [alt]="item.ref.title" />
+              <span class="play"><app-icon name="play" [size]="18" [filled]="true" /></span>
+              <div class="bar"><span [style.width.%]="(completion(item.ref) ?? 0) * 100"></span></div>
+            </div>
+            <div class="resume-meta">
+              <div class="r-title">{{ item.ref.title }}</div>
+              <div class="r-sub">
+                @if (item.ref.subtitle) {<span>{{ item.ref.subtitle }}</span> · }
+                {{ remaining(item.ref) }}
+              </div>
+            </div>
+            <button class="remove" type="button" (click)="remove(item.ref, $event)" aria-label="Remove from continue watching">
+              <app-icon name="close" [size]="14" />
+            </button>
+          </a>
+        }
+      </div>
+    </section>
+  }
+
+  @if (favoriteChannels().length) {
+    <section class="section">
+      <div class="section-head">
+        <h2>Favorite channels</h2>
+        <a routerLink="/favorites">See all</a>
+      </div>
+      <div class="rail channels">
+        @for (c of favoriteChannels(); track c.id) {
+          <a class="chan" [routerLink]="['/watch/live', c.id]" [queryParams]="{ category: c.parentId }">
+            <div class="chan-logo"><app-artwork [src]="c.image" [alt]="c.title" fit="contain" /></div>
+            <div class="chan-name">{{ c.title }}</div>
+          </a>
+        }
+      </div>
+    </section>
+  }
+
+  @if (recentChannels().length) {
+    <section class="section">
+      <div class="section-head">
+        <h2>Recently watched channels</h2>
+      </div>
+      <div class="rail channels">
+        @for (c of recentChannels(); track c.id) {
+          <a class="chan" [routerLink]="['/watch/live', c.id]" [queryParams]="{ category: c.parentId }">
+            <div class="chan-logo"><app-artwork [src]="c.image" [alt]="c.title" fit="contain" /></div>
+            <div class="chan-name">{{ c.title }}</div>
+          </a>
+        }
+      </div>
+    </section>
+  }
+
+  @if (favoriteShows().length) {
+    <section class="section">
+      <div class="section-head">
+        <h2>Favorite movies and series</h2>
+        <a routerLink="/favorites">See all</a>
+      </div>
+      <div class="rail">
+        @for (f of favoriteShows(); track f.kind + f.id) {
+          <app-poster-card [kind]="f.kind" [id]="f.id" [title]="f.title" [image]="f.image"
+            [subtitle]="f.kind === 'movie' ? 'Movie' : 'Series'" [link]="detailLink(f)" />
+        }
+      </div>
+    </section>
+  }
+
+  @if (isEmpty()) {
+    <section class="section">
+      <div class="empty">
+        <h3>Nothing here yet</h3>
+        <p>Favorites, recently watched channels and anything you stop halfway through will show up on this page.</p>
+      </div>
+    </section>
+  }
+</div>

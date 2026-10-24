@@ -88,7 +88,7 @@ export class Tv {
     if (this.path === 'tv') {
       this.router.navigate(['/tv', category.category_id]);
     }
-    if (this.path === 'movies') {
+    else if (this.path === 'movies') {
       this.router.navigate(['/movies', category.category_id]);
     } else {
       this.router.navigate(['/shows', category.category_id]);

@@ -1,0 +1,16 @@
+{
+  "name": "popcorn",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Popcorn — a self-hosted web app for your IPTV (Xtream Codes) service",
+  "scripts": {
+    "setup": "npm install --prefix client && npm install --prefix server",
+    "build": "npm run build --prefix client",
+    "start": "npm start --prefix server",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm start --prefix client"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

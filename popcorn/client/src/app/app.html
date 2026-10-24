@@ -1,0 +1,36 @@
+@if (chrome()) {
+  <nav class="sidebar" aria-label="Main">
+    <a class="brand" routerLink="/" aria-label="Popcorn home">
+      <span class="brand-mark"><app-icon name="popcorn" [size]="22" [stroke]="2" /></span>
+      <span class="brand-name">Popcorn</span>
+    </a>
+
+    <ul class="nav">
+      @for (item of nav; track item.path) {
+        <li>
+          <a [routerLink]="item.path" routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: !!item.exact }" [attr.title]="item.label">
+            <app-icon [name]="item.icon" [size]="21" />
+            <span class="label">{{ item.label }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+
+    <div class="sidebar-foot">
+      <a routerLink="/settings" routerLinkActive="active" class="settings-link" title="Settings">
+        <app-icon name="settings" [size]="21" />
+        <span class="label">Settings</span>
+      </a>
+      @if (expiry(); as e) {
+        <div class="expiry" [class.warn]="e.warn">
+          <span class="label">{{ e.text }}</span>
+        </div>
+      }
+    </div>
+  </nav>
+}
+
+<main class="content" [class.bare]="!chrome()">
+  <router-outlet />
+</main>
